@@ -9,16 +9,16 @@ Marques Barbosa, Filipe, and Johan Löfberg. *Exponential Cone Approach to Joint
 
 If you use this code or the results in academic work, please cite the paper above.
 
-@article{Barbosa2025,
-	title = {Exponential cone approach to joint chance constraints in stochastic model
-	predictive control},
-	journal = {International Journal of Control},
-	publisher = {Taylor \& Francis},
-	author = {Barbosa,  Filipe M. and L{\"{o}}fberg, Johan},
-	year = {2025},
-	month = Apr,
-	pages = {3024–3034},
-	volume = {98},
-	number = {12}
+@article{Barbosa2025,<br>
+	title = {Exponential cone approach to joint chance constraints in stochastic model<br>
+	predictive control},<br>
+	journal = {International Journal of Control},<br>
+	publisher = {Taylor \& Francis},<br>
+	author = {Barbosa,  Filipe M. and L{\"{o}}fberg, Johan},<br>
+	year = {2025},<br>
+	month = Apr,<br>
+	pages = {3024–3034},<br>
+	volume = {98},<br>
+	number = {12}<br>
 }
 
