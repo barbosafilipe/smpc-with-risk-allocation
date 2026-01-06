@@ -1,8 +1,8 @@
-addpath(genpath('C:\Users\filma90\Documents\MATLAB\YALMIP-2023\YALMIP'))
-addpath(genpath('C:\Program Files\Mosek\10.1\toolbox\r2017a'))
+addpath(genpath('your_path_to_YALMIP'))
+addpath(genpath('your_path_to_mosek'))
 yalmip('clear')
 
-% Model data
+% Model
 A = [-0.1 -0.3; 1 -0.5];
 B = [2;0];
 G = [1; 0];
@@ -12,7 +12,6 @@ nx = 2; % Number of states
 nu = 1; % Number of dbinputs
 ny = 1; % output dimension
 
-% MPC data
 N = 6; % horizon
 
 % The variables
@@ -20,8 +19,8 @@ u = sdpvar(repmat(nu,1,N),repmat(1,1,N)); % inputs
 x = sdpvar(repmat(nx,1,N+1),repmat(1,1,N+1)); % states
 r = sdpvar(repmat(ny,1,N+1),repmat(1,1,N+1)); % reference
 w = sdpvar(repmat(nu,1,N),repmat(1,1,N)); % disturbances
-gammaU = sdpvar(repmat(nu,1,N),repmat(1,1,N)); % gamma for upper bound
-gammaL = sdpvar(repmat(nu,1,N),repmat(1,1,N)); % gamma for lower bound
+gammaU = sdpvar(repmat(nu,1,N),repmat(1,1,N)); % risk of upper bound violation
+gammaL = sdpvar(repmat(nu,1,N),repmat(1,1,N)); % risk of lower bound violation
 
 % Obtaining a linear map
 x_base = sdpvar(nx,1);
@@ -47,28 +46,35 @@ constraints = [];
 
 % Stochastic part
 gammaSum = 0;
-mu = 0.1;
-sigma = 0.2;
-uppc = 3.4;
-lowc = -3.4;
+mu = 0.1; % distribution mean
+sigma = 0.2; % distribution covariance
+uppc = 3.4; % upper bound
+lowc = -3.4; % lower bound
 
 %% The controller
 for i=1:N
+    
     x{i+1} = A*x{i}+B*u{i}+G*w{i};
+    
     gammaSum = gammaSum+gammaU{i}+gammaL{i};
-    constraints = [constraints, -2<=u{i}<=2,
+
+    constraints = [constraints, 
+        -2<=u{i}<=2,
         gammaU{i} >= 0,
         gammaL{i} >= 0,
         probability(x{i+1}(1,1) <= uppc) >= 1-gammaU{i},
         probability(x{i+1}(1,1) >= lowc) >= 1-gammaL{i},
         uncertain(w{i},'normal',mu,sigma)];
 
-    y = replace(C*x{i}-r{i},[w{:}],0);
-    
+    y = replace(C*x{i}-r{i},[w{:}],0); % cost cannot have stochastic variables
+
+    % cost is quadratic trade-off between risk and performance
     objective = objective + y'*y + gammaU{i}'*gammaU{i} + gammaL{i}'*gammaL{i};
-    
 end
-constraints = [constraints, 0<=gammaSum<=0.5];
+
+constraints = [constraints,
+    0<=gammaSum<=0.5];
+
 y = replace(C*x{N+1}-r{N+1},[w{:}],0);
 objective = objective + y'*y;
 
@@ -80,12 +86,12 @@ ops = sdpsettings('chance.expcone','yes','solver','mosek','verbose',0);
 controller = optimizer(constraints, objective,ops,parameters_in,solutions_out);
 
 %% Execution
-time = 0:0.0250:6.25;
-xx = [0;0];
-%%
-rng('default');
+time = 0:0.0250:6.25; % time vector
+xx = [0;0]; % initial state
+rng('default'); 
 disturbance = mu+chol(sigma)*randn(1,size(time,2)-1);
 
+% some initializations
 rt = disturbance;
 xhist = xx;
 uhist = [];
@@ -93,8 +99,10 @@ gammahistU = [];
 gammahistL = [];
 solthist = [];
 
+% For the Monte Carlo simulation
+nsim = 1e7; % Number of realizations
 
-nsim = 1e7;
+% evaluations steps
 te1 = 45; 
 te2 = 81;
 te3 = 171;
@@ -124,14 +132,14 @@ for k = 1:(size(time,2)-1)
                 probability_test(X(:,2:end),nsim,mu,sigma,Gmap,GammaU,GammaL,uppc,lowc)
         end
     end
-    
+
     % chance constraints
     uhist = [uhist, U(1)];
     gammahistU = [gammahistU, GammaU'];
     gammahistL = [gammahistL, GammaL'];
 
     xx = A*xx + B*U(1)+G*disturbance(k);
-    xhist = [xhist xx];  
+    xhist = [xhist xx];
 end
 
 
@@ -214,7 +222,7 @@ legend('$\gamma^{u}_{k+1}$','$\gamma^{u}_{k+2}$','$\gamma^{u}_{k+3}$','$\gamma^{
 leg.NumColumns = 2;
 legend boxoff
 axis([0 6.25 0 0.2])
-% exportgraphics(gca,'C:\Users\filma90\Documents\Texts\writing\Journal\Chance_constraints\fig\gammas.eps')
+
 
 %% Plot feasible set
 figure('Position', [200, 100, 1600, 900]);
@@ -234,6 +242,6 @@ xlabel('$x_1$','Interpreter','Latex','FontSize',35)
 ylabel('$x_2$','Interpreter','Latex','FontSize',35)
 legend('Proposed approach','Bonferonni correction','Interpreter','latex','FontSize',20,'Location','Northeast');
 legend boxoff;
-drawnow;
-% exportgraphics(gca,'C:\Users\filma90\Documents\Texts\writing\Journal\Chance_constraints\fig\feasible-set.eps')
+
+
 
