@@ -2,7 +2,7 @@
 
 This repository contains code to reproduce the results from the paper:
 
-Marques Barbosa, Filipe, and Johan Löfberg. [*Exponential Cone Approach to Joint Chance Constraints in Stochastic Model Predictive Control.*](https://doi.org/10.1080/00207179.2025.2492305) International Journal of Control, 2025. doi:10.1080/00207179.2025.2492305.
+Filipe Marques Barbosa and Johan Löfberg. [*Exponential Cone Approach to Joint Chance Constraints in Stochastic Model Predictive Control.*](https://doi.org/10.1080/00207179.2025.2492305) International Journal of Control, 2025. doi:10.1080/00207179.2025.2492305.
 
 
 ## Citation
