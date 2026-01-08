@@ -1,5 +1,5 @@
-addpath(genpath('C:\Users\filma90\Documents\MATLAB\YALMIP-2023\YALMIP'))
-addpath(genpath('C:\Program Files\Mosek\10.1\toolbox\r2017a'))
+addpath(genpath('your_path_to_YALMIP'))
+addpath(genpath('your_path_to_mosek'))
 yalmip('clear')
 
 %% Using Lambert
