@@ -22,7 +22,6 @@ If you use this code or the results in academic work, please cite the paper abov
 
 ## Information
 
-The main contribution of this paper is a conic convex formulation of chance constraints in which the risk allocation is treated as an optimization variable. This formulation is implemented internally in :contentReference[oaicite:0]{index=0}:
-https://github.com/yalmip/YALMIP/tree/stochastics_conic
+The main contribution of this paper is a conic convex formulation of chance constraints in which the risk allocation is treated as an optimization variable. This formulation is implemented internally in [YALMIP](https://github.com/yalmip/YALMIP/tree/stochastics_conic).
 
 Since the module for chance constraints has not yet been released in the main branch, the `stochastics_conic` branch must be checked out explicitly.
