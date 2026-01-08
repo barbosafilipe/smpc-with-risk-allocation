@@ -4,7 +4,6 @@ This repository contains code to reproduce the results from the paper:
 
 Filipe Marques Barbosa and Johan Löfberg. [*Exponential Cone Approach to Joint Chance Constraints in Stochastic Model Predictive Control.*](https://doi.org/10.1080/00207179.2025.2492305) International Journal of Control, 2025. doi:10.1080/00207179.2025.2492305.
 
-
 ## Citation
 
 If you use this code or the results in academic work, please cite the paper above.
@@ -21,3 +20,9 @@ If you use this code or the results in academic work, please cite the paper abov
 	number = {12}<br>
 }
 
+## Information
+
+The main contribution of this paper is a conic convex formulation of chance constraints in which the risk allocation is treated as an optimization variable. This formulation is implemented internally in :contentReference[oaicite:0]{index=0}:
+https://github.com/yalmip/YALMIP/tree/stochastics_conic
+
+Since the module for chance constraints has not yet been released in the main branch, the `stochastics_conic` branch must be checked out explicitly.
