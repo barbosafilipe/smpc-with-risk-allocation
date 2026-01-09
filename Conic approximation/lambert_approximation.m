@@ -1,5 +1,4 @@
 addpath(genpath('your_path_to_YALMIP'))
-addpath(genpath('your_path_to_mosek'))
 yalmip('clear')
 
 %% Using the Lambert-W function as an exponential cone approximation to the probit function
