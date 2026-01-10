@@ -1,4 +1,4 @@
-addpath(genpath('your_path_to_YALMIP'))
+% addpath(genpath('your_path_to_YALMIP'))
 yalmip('clear')
 
 %% Using the Lambert-W function as an exponential cone approximation to the probit function
@@ -23,9 +23,9 @@ for i = 1:100:length(x)
     fi = -a*lambertw(b*x(i)) + k + c*x(i);
     yi = norminv(1-x(i));
     con = [con, z(i) == (fi-yi), z(i) >= 0];
-    obj = obj + (1 + 10000*(i==1))*(z(i))^2;
+    obj = obj + (1 + 100*(i==1))*(z(i))^2;
 end
-optimize(con,obj,sdpsettings('usex0',1,'solver','ipopt'));
+optimize(con,obj,sdpsettings('usex0',1,'solver','fmincon'));
 
 %%
 a = value(a);

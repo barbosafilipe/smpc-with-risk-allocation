@@ -1,16 +1,17 @@
-addpath(genpath('your_path_to_YALMIP'))
-addpath(genpath('your_path_to_mosek'))
+% addpath(genpath('your_path_to_YALMIP'))
+% addpath(genpath('your_path_to_mosek'))
 yalmip('clear')
 
 % Model
 A = [-0.1 -0.3; 1 -0.5];
-B = [2;0];
+B = [2; 0];
 G = [1; 0];
 C = [1 0];
 
-nx = 2; % Number of states
-nu = 1; % Number of dbinputs
-ny = 1; % output dimension
+nx = size(A,1); % number of states
+nu = size(B,2); % number of inputs
+nw = size(G,2); % dimesion of disturbance
+ny = size(C,1); % output dimension
 
 N = 6; % horizon
 
@@ -22,30 +23,12 @@ w = sdpvar(repmat(nu,1,N),repmat(1,1,N)); % disturbances
 gammaU = sdpvar(repmat(nu,1,N),repmat(1,1,N)); % risk of upper bound violation
 gammaL = sdpvar(repmat(nu,1,N),repmat(1,1,N)); % risk of lower bound violation
 
-% Obtaining a linear map
-x_base = sdpvar(nx,1);
-u_base = sdpvar(nu,N);
-w_base = sdpvar(1,N);
-X_base = [];
-
-for k = 1:N
-    x_base = A*x_base + B*u_base(:,k) + G*w_base(:,k);
-    X_base = [X_base; x_base];
-end
-lmap = full(getbase(X_base));
-lmap = lmap(:,2:end);
-
-Amap = lmap(:,1:nx);
-Bmap = lmap(:,(nx+1):(nx+N));
-Gmap = lmap(:,(nx+1+N):(nx+2*N));
-
-
 % declare objective and constraints
 objective = 0;
 constraints = [];
 
 % Stochastic part
-gammaSum = 0;
+gammaSum = 0; % upper bound for Boole's innequality
 mu = 0.1; % distribution mean
 sigma = 0.2; % distribution covariance
 uppc = 3.4; % upper bound
@@ -59,11 +42,11 @@ for i=1:N
     gammaSum = gammaSum+gammaU{i}+gammaL{i};
 
     constraints = [constraints, 
-        -2<=u{i}<=2,
-        gammaU{i} >= 0,
+        -2<=u{i}<=2, % input constraints
+        gammaU{i} >= 0, % risk cannot be negative
         gammaL{i} >= 0,
-        probability(x{i+1}(1,1) <= uppc) >= 1-gammaU{i},
-        probability(x{i+1}(1,1) >= lowc) >= 1-gammaL{i},
+        probability(x{i+1}(1,1) <= uppc) >= 1-gammaU{i}, % probability to violate the upper bund constraints
+        probability(x{i+1}(1,1) >= lowc) >= 1-gammaL{i}, % probability to violate the lower bund constraints
         uncertain(w{i},'normal',mu,sigma)];
 
     y = replace(C*x{i}-r{i},[w{:}],0); % cost cannot have stochastic variables
@@ -73,26 +56,27 @@ for i=1:N
 end
 
 constraints = [constraints,
-    0<=gammaSum<=0.5];
+    0<=gammaSum<=0.5]; % bound on joint constraints
 
 y = replace(C*x{N+1}-r{N+1},[w{:}],0);
 objective = objective + y'*y;
 
+% Construction the controller
 parameters_in = {x{1},[r{:}]};
 solutions_out = {[u{:}],replace([x{:}],[w{:}],0),[gammaU{:}],[gammaL{:}]};
-
 
 ops = sdpsettings('chance.expcone','yes','solver','mosek','verbose',0);
 controller = optimizer(constraints, objective,ops,parameters_in,solutions_out);
 
 %% Execution
-time = 0:0.0250:6.25; % time vector
-xx = [0;0]; % initial state
-rng('default'); 
-disturbance = mu+chol(sigma)*randn(1,size(time,2)-1);
 
 % some initializations
+rng('default');
+time = 0:0.0250:6.25; % time vector
+disturbance = mu+chol(sigma)*randn(1,size(time,2)-1); % computing the disturbance realization
 rt = disturbance;
+
+xx = [0;0]; % initial state
 xhist = xx;
 uhist = [];
 gammahistU = [];
@@ -100,21 +84,22 @@ gammahistL = [];
 solthist = [];
 
 % For the Monte Carlo simulation
+monteCarloSimulations = true;
 nsim = 1e7; % Number of realizations
 
-% evaluations steps
+% evaluations points
 te1 = 45; 
 te2 = 81;
 te3 = 171;
 te4 = 213;
 
 for k = 1:(size(time,2)-1)
-    future_r = 3*sin((k:k+N)/40); % reference
+    future_r = 3*sin((k:k+N)/40); % reference to be followed
 
     inputs = {xx,future_r};
     [solutions,diagnostics,~,~,~,solt] = controller{inputs};
 
-    % extract the values
+    % extract the solution
     U = solutions{1};
     X = solutions{2};
     GammaU = solutions{3};
@@ -126,14 +111,14 @@ for k = 1:(size(time,2)-1)
     end
 
     % Monte Carlo simulations
-    if 1
+    if monteCarloSimulations
         if k==te1 || k==te2 || k==te3 || k==te4
-            [individual_probabilities_upper,individual_probabilities_low, joint_probs] =...
-                probability_test(X(:,2:end),nsim,mu,sigma,Gmap,GammaU,GammaL,uppc,lowc)
+            [individual_probabilities_upper,individual_probabilities_low, joint_probs] = ...
+                probabilityMonteCarlo(X(:,2:end),nsim,mu,sigma,GammaU,GammaL,uppc,lowc,N,nx,nw,A,G)
         end
     end
 
-    % chance constraints
+    % Storing the results
     uhist = [uhist, U(1)];
     gammahistU = [gammahistU, GammaU'];
     gammahistL = [gammahistL, GammaL'];
@@ -144,7 +129,7 @@ end
 
 
 
-%% Plots
+%% Plots 
 
 reference = 3*sin(time(2:end));
 % colors for reference and performed trajectory
@@ -174,7 +159,7 @@ co2 = [0.9216 0.4549 0.0549];
 gray = [0.3 0.3 0.3];
 
 figure('Position', [0, 100, 1600, 900]);
-% title('Performed trajectory and reference','Interpreter','Latex','FontSize',25)
+title('Performed trajectory and reference','Interpreter','Latex','FontSize',25)
 hold on
 plot(time(2:end),reference,'color',cor,'LineWidth',2)
 plot(time,xhist(1,:),'color',cot,'LineWidth',3)
@@ -191,11 +176,11 @@ h1.YAxis.FontSize = 20;
 legend('$r$','$y$','fontsize',25,'Interpreter','latex','Location','Northeast')
 legend boxoff
 axis([0 6.25 -5 5])
-% exportgraphics(gca,'C:\Users\filma90\Documents\Texts\writing\Journal\Chance_constraints\fig\traj-simple.eps')
+
 
 figure('Position', [0, 100, 1600, 900]);
 nexttile;
-% title('Confidence parameters','Interpreter','Latex','FontSize',25)
+title('Confidence parameters','Interpreter','Latex','FontSize',25)
 hold on
 plot(time(2:end),gammahistU(1,:),'color',cog1,'LineWidth',2)
 plot(time(2:end),gammahistU(2,:),'color',cog2,'LineWidth',2)
@@ -228,7 +213,7 @@ axis([0 6.25 0 0.2])
 figure('Position', [200, 100, 1600, 900]);
 clf
 hold on
-% title('Feasible sets','Interpreter','Latex','FontSize',25)
+title('Feasible sets','Interpreter','Latex','FontSize',25)
 plot(constraints,x{1},co0,100,sdpsettings('chance.expcone','yes','plot.edgecolor','none','plot.shade',1))
 plot([constraints,[gammaL{:}]==0.5/(2*N),[gammaU{:}]==0.5/(2*N)],x{1},co2,100,...
     sdpsettings('chance.expcone','yes','plot.edgecolor','none','plot.shade',1))
@@ -242,6 +227,5 @@ xlabel('$x_1$','Interpreter','Latex','FontSize',35)
 ylabel('$x_2$','Interpreter','Latex','FontSize',35)
 legend('Proposed approach','Bonferonni correction','Interpreter','latex','FontSize',20,'Location','Northeast');
 legend boxoff;
-
 
 
