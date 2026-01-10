@@ -1,5 +1,12 @@
-% addpath(genpath('your_path_to_YALMIP'))
-% addpath(genpath('your_path_to_mosek'))
+% This code is for the reproduction of the paper:
+%
+% Marques Barbosa, Filipe, and Johan Löfberg. 2025. "Exponential Cone 
+% Approach to Joint Chance Constraints in Stochastic Model Predictive 
+% Control." International Journal of Control.
+% DOI: https://doi.org/10.1080/00207179.2025.2492305
+
+addpath(genpath('your_path_to_YALMIP'))
+addpath(genpath('your_path_to_mosek'))
 yalmip('clear')
 
 % Model
@@ -128,8 +135,9 @@ for k = 1:(size(time,2)-1)
 end
 
 
-
-%% Plots 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Plots
 
 reference = 3*sin(time(2:end));
 % colors for reference and performed trajectory

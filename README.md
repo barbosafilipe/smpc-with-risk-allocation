@@ -20,8 +20,23 @@ If you use this code or the results in academic work, please cite the paper abov
 	number = {12}<br>
 }
 
-## Information
+## Information for the user
 
-The main contribution of this paper is a conic convex formulation of chance constraints in which the risk allocation is treated as an optimization variable. This formulation is implemented internally in [YALMIP](https://github.com/yalmip/YALMIP/tree/stochastics_conic).
+The main contribution of this paper is the formulation of chance constraints as (exponential) conic convex functions, which allows risk allocation to be treated as an optimization variable.
 
-Since the module for chance constraints has not yet been released in the main branch, the `stochastics_conic` branch must be checked out explicitly.
+### YALMIP dependency
+
+Once chance constraints are added using `probability()`, the formulation is handled internally by [YALMIP](https://github.com/yalmip/YALMIP/tree/stochastics_conic). Therefore, YALMIP must be installed and added to your path.
+
+**Note:** The module for chance-constrained optimization has not yet been officially released in the main branch. The modeling is implemented in the `stochastics_conic` branch, which must be used.
+
+### MOSEK dependency
+
+The solver used is [MOSEK](https://www.mosek.com/), wich provide free academic [licenses](https://www.mosek.com/products/academic-licenses/).
+
+### Updates in the approximation
+
+In a later version, we updated the exponential-cone approximation to address the asymptotic behavior of the probit function, since $\Phi^{-1}(1-\gamma) \to \infty$ as $\gamma \to 0$. This was done by incorporating a logarithmic term into the approximation. As a result, numerical results may differ (the approximation is more accurate for very small risk levels though).
+
+
+

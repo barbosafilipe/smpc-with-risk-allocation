@@ -1,4 +1,11 @@
-% addpath(genpath('your_path_to_YALMIP'))
+% This code is for obtaining the conic convex approximation used in the paper:
+%
+% Marques Barbosa, Filipe, and Johan Löfberg. 2025. "Exponential Cone 
+% Approach to Joint Chance Constraints in Stochastic Model Predictive 
+% Control." International Journal of Control.
+% DOI: https://doi.org/10.1080/00207179.2025.2492305
+
+addpath(genpath('your_path_to_YALMIP'))
 yalmip('clear')
 
 %% Using the Lambert-W function as an exponential cone approximation to the probit function
