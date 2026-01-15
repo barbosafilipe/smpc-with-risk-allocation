@@ -32,7 +32,7 @@ Once chance constraints are added using `probability()`, the formulation is hand
 
 ### MOSEK dependency
 
-The solver used is [MOSEK](https://www.mosek.com/), wich provide free academic [licenses](https://www.mosek.com/products/academic-licenses/).
+The solver used is [MOSEK](https://www.mosek.com/), which provides free academic [licenses](https://www.mosek.com/products/academic-licenses/).
 
 ### Updates in the approximation
 
