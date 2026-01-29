@@ -52,8 +52,8 @@ for i=1:N
         -2<=u{i}<=2, % input constraints
         gammaU{i} >= 0, % risk cannot be negative
         gammaL{i} >= 0,
-        probability(x{i+1}(1,1) <= uppc) >= 1-gammaU{i}, % probability to violate the upper bund constraints
-        probability(x{i+1}(1,1) >= lowc) >= 1-gammaL{i}, % probability to violate the lower bund constraints
+        probability(x{i+1}(1,1) <= uppc) >= 1-gammaU{i}, % probability to violate the upper bound constraints
+        probability(x{i+1}(1,1) >= lowc) >= 1-gammaL{i}, % probability to violate the lower bound constraints
         uncertain(w{i},'normal',mu,sigma)];
 
     y = replace(C*x{i}-r{i},[w{:}],0); % cost cannot have stochastic variables
@@ -219,7 +219,6 @@ axis([0 6.25 0 0.2])
 
 %% Plot feasible set
 figure('Position', [200, 100, 1600, 900]);
-clf
 hold on
 title('Feasible sets','Interpreter','Latex','FontSize',25)
 plot(constraints,x{1},co0,100,sdpsettings('chance.expcone','yes','plot.edgecolor','none','plot.shade',1))
@@ -235,5 +234,3 @@ xlabel('$x_1$','Interpreter','Latex','FontSize',35)
 ylabel('$x_2$','Interpreter','Latex','FontSize',35)
 legend('Proposed approach','Bonferonni correction','Interpreter','latex','FontSize',20,'Location','Northeast');
 legend boxoff;
-
-
