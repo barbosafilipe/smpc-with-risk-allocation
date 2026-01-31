@@ -47,7 +47,7 @@ The path planning (reference generation) utilized in the `pathplanner.m` functio
 
 The control of the crane in Example 2 consists of following a reference trajectory obtained using the time-optimal control approach presented in:
 
-    Filipe Marques Barbosa, and Johan Löfberg. [*Time-optimal control of cranes subject to container height constraints*](https://doi.org/10.23919/ACC53348.2022.9867816). In 2022 American Control Conference (ACC), pp. 3558-3563. IEEE.
+Filipe Marques Barbosa, and Johan Löfberg. [*Time-optimal control of cranes subject to container height constraints*](https://doi.org/10.23919/ACC53348.2022.9867816). In 2022 American Control Conference (ACC), pp. 3558-3563. IEEE. doi: 10.23919/ACC53348.2022.9867816.
 
 ### Updates in the approximation
 
