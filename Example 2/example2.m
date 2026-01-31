@@ -1,4 +1,22 @@
-clear; close all; clc;
+% Code for the reproduction of Example 2 in the paper:
+%
+% Marques Barbosa, Filipe, and Johan Löfberg. 2025. "Exponential Cone 
+% Approach to Joint Chance Constraints in Stochastic Model Predictive 
+% Control." International Journal of Control.
+% DOI: https://doi.org/10.1080/00207179.2025.2492305
+%
+% This paper must be cited if used in further research.
+%
+% NOTE: The control of the crane consists of following a reference trajectory 
+% obtained using the time-optimal control approach presented in:
+%
+% Barbosa, Filipe Marques, and Johan Löfberg. "Time-optimal control of cranes 
+% subject to container height constraints." In 2022 American Control Conference 
+% (ACC), pp. 3558-3563. IEEE, 2022.
+
+
+
+
 %% Obtaining the reference path
 % System Physical Parameters
 m1 = 1.2;       % Mass of cart
@@ -9,14 +27,12 @@ g  = 9.8067;    % Gravity
 % Controller / Planner Settings
 ctrl_intervals = 100;       % Number of control intervals (resolution)
 ctrl_const     = [-2, 2];   % Input constraints [min, max]
-createPath     = false;     % Flag: true = generate new path, false = load existing
+createPath     = true;     % Flag: true = generate new path, false = load existing
 
-% Path generation or loading
+%% 2. Path Generation or Loading
 if createPath
    
-    % Define paths to dependencies
     % OBS: you must have CasADi installed (https://web.casadi.org/get/)
-    addpath(genpath('/home/filipe/Documents/Research/smpc-with-risk-allocation/Example 2/model_in_yop/yop'))
     addpath(genpath('/home/filipe/Documents/casadi-3.7.2'))
 
     % Generate time-optimal path

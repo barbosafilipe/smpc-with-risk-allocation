@@ -1,9 +1,13 @@
-% This code is for the reproduction of the paper:
+% Code for the reproduction of Example 1 in the paper:
 %
 % Marques Barbosa, Filipe, and Johan Löfberg. 2025. "Exponential Cone 
 % Approach to Joint Chance Constraints in Stochastic Model Predictive 
 % Control." International Journal of Control.
 % DOI: https://doi.org/10.1080/00207179.2025.2492305
+%
+% This paper must be cited if used in further research.
+
+
 
 addpath(genpath('your_path_to_YALMIP'))
 addpath(genpath('your_path_to_mosek'))
