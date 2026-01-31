@@ -34,6 +34,21 @@ Once chance constraints are added using `probability()`, the formulation is hand
 
 The solver used is [MOSEK](https://www.mosek.com/), which provides free academic [licenses](https://www.mosek.com/products/academic-licenses/).
 
+### CasADi & Yop Dependency
+
+The path planning (reference generation) utilized in the `pathplanner.m` function (Example 2) requires [CasADi](https://web.casadi.org/) and the [Yop toolbox](https://github.com/yoptimalcontrol/yop). 
+
+**Important: Modified Toolbox Version** To implement the time-optimal path planning approach, certain core functions in the Yop toolbox were modified to handle the coordinate transformation presented in the paper above mentioned. 
+
+* **Requirement:** It is imperative to use the specific version of the Yop toolbox provided within this repository. 
+* **Warning:** Using a standard or different version of Yop will result in errors or incorrect trajectory generation, as it lacks the necessary modifications required for this formulation to solve correctly. 
+
+### Reference Trajectory
+
+The control of the crane in Example 2 consists of following a reference trajectory obtained using the time-optimal control approach presented in:
+
+    Filipe Marques Barbosa, and Johan Löfberg. [*Time-optimal control of cranes subject to container height constraints*](https://doi.org/10.23919/ACC53348.2022.9867816). In 2022 American Control Conference (ACC), pp. 3558-3563. IEEE.
+
 ### Updates in the approximation
 
 In a later version, we updated the exponential-cone approximation to address the asymptotic behavior of the probit function, since $\Phi^{-1}(1-\gamma) \to \infty$ as $\gamma \to 0$. This was done by incorporating a logarithmic term into the approximation. As a result, numerical results may differ (the approximation is more accurate for very small risk levels though).

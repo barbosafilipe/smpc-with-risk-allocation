@@ -7,7 +7,13 @@ function [path] = pathplanner(m1,m2,l,g,N2,inputConstraint)
 %   N2              : Number of control intervals for the refined solution
 %   inputConstraint : [min, max] control input limits
 %
-%   DEPENDENCIES AND CITATIONS:
+%   DEPENDENCIES AND REFERENCES:
+%   The reference trajectory is obtained using the time-optimal control 
+%   approach presented in:
+%   Barbosa, F. M., and Löfberg, J. (2022). "Time-optimal control of cranes 
+%   subject to container height constraints." In 2022 American Control 
+%   Conference (ACC), pp. 3558-3563. IEEE.
+%
 %   This function requires the Yop toolbox and CasADi.
 %
 %   1. Yop Toolbox
